@@ -1,0 +1,113 @@
+
+
+Problem:
+0 0 0 3 8 4 0 5 0
+0 0 0 1 2 5 8 0 0
+4 8 0 0 9 0 1 0 0
+5 0 0 0 0 0 0 9 0
+6 3 0 0 5 1 0 0 0
+0 0 4 0 0 9 3 7 0
+7 0 0 5 0 6 0 2 0
+0 0 2 0 0 3 0 0 7
+0 0 0 2 0 8 0 0 0
+Solution:
+2 9 1 3 8 4 7 5 6
+3 6 7 1 2 5 8 4 9
+4 8 5 6 9 7 1 3 2
+5 7 8 4 3 2 6 9 1
+6 3 9 7 5 1 2 8 4
+1 2 4 8 6 9 3 7 5
+7 1 3 5 4 6 9 2 8
+8 4 2 9 1 3 5 6 7
+9 5 6 2 7 8 4 1 3
+
+g[0][3].setActualValue('3');
+g[0][4].setActualValue('8');
+g[0][5].setActualValue('4');
+g[0][7].setActualValue('5');
+g[1][3].setActualValue('1');
+g[1][4].setActualValue('2');
+g[1][5].setActualValue('5');
+g[1][6].setActualValue('8');
+g[2][0].setActualValue('4');
+g[2][1].setActualValue('8');
+g[2][4].setActualValue('9');
+g[2][6].setActualValue('1');
+g[3][0].setActualValue('5');
+g[3][7].setActualValue('9');
+g[4][0].setActualValue('6');
+g[4][1].setActualValue('3');
+g[4][4].setActualValue('5');
+g[4][5].setActualValue('1');
+g[5][2].setActualValue('4');
+g[5][5].setActualValue('9');
+g[5][6].setActualValue('3');
+g[5][7].setActualValue('7');
+g[6][0].setActualValue('7');
+g[6][3].setActualValue('5');
+g[6][5].setActualValue('6');
+g[6][7].setActualValue('2');
+g[7][2].setActualValue('2');
+g[7][5].setActualValue('3');
+g[7][8].setActualValue('7');
+g[8][3].setActualValue('2');
+g[8][5].setActualValue('8');
+
+Problem:
+0 0 0 0 0 3 0 6 0
+0 0 4 0 0 0 3 0 0
+8 5 0 7 9 6 0 0 0
+1 0 5 6 0 9 7 8 2
+9 7 6 0 0 0 0 3 5
+0 8 0 0 0 0 0 0 0
+0 2 0 0 0 5 9 4 3
+5 6 0 3 7 0 1 0 8
+3 0 0 0 0 2 5 0 6
+Solution:
+2 1 7 4 5 3 8 6 9
+6 9 4 2 8 1 3 5 7
+8 5 3 7 9 6 2 1 4
+1 3 5 6 4 9 7 8 2
+9 7 6 1 2 8 4 3 5
+4 8 2 5 3 7 6 9 1
+7 2 1 8 6 5 9 4 3
+5 6 9 3 7 4 1 2 8
+3 4 8 9 1 2 5 7 6
+
+g[0][5].setActualValue('3');
+g[0][7].setActualValue('6');
+g[1][2].setActualValue('4');
+g[1][6].setActualValue('3');
+g[2][0].setActualValue('8');
+g[2][1].setActualValue('5');
+g[2][3].setActualValue('7');
+g[2][4].setActualValue('9');
+g[2][5].setActualValue('6');
+g[3][0].setActualValue('1');
+g[3][2].setActualValue('5');
+g[3][3].setActualValue('6');
+g[3][5].setActualValue('9');
+g[3][6].setActualValue('7');
+g[3][7].setActualValue('8');
+g[3][8].setActualValue('2');
+g[4][0].setActualValue('9');
+g[4][1].setActualValue('7');
+g[4][2].setActualValue('6');
+g[4][7].setActualValue('3');
+g[4][8].setActualValue('5');
+g[5][1].setActualValue('8');
+g[6][1].setActualValue('2');
+g[6][5].setActualValue('5');
+g[6][6].setActualValue('9');
+g[6][7].setActualValue('4');
+g[6][8].setActualValue('3');
+g[7][0].setActualValue('5');
+g[7][1].setActualValue('6');
+g[7][3].setActualValue('3');
+g[7][4].setActualValue('7');
+g[7][6].setActualValue('1');
+g[7][8].setActualValue('8');
+g[8][0].setActualValue('3');
+g[8][5].setActualValue('2');
+g[8][6].setActualValue('5');
+g[8][8].setActualValue('6');
