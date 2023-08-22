@@ -1,26 +1,3 @@
-/*
-	Ideas for solving sudoku:
-	1) First, select possible numbers for each position by checking horizontally, vertically, and within the quadrant. If only one number is 
-	found for a certain position, then place it and reevaluate all the affected positions, including the same column, row, and quadrant.
-
-	2) Once this is completed, if the game becomes stuck, look for a number with a limited number of possibilities, then make an 
-	assumption and repeat step 1. Continue this process until a cell has no available numbers. If the game remains stuck, repeat step 2. If an
-	empty cell with no available numbers is found, restore the position before the last assumption was made and make a different assumption.
-
-	3)It should also be checked if that position is the last one of the quadrant/row/column that can have a specific value.
-
-	4)Some basic understanding is missing, example:
-		| 1 2 3 |
-		| 4 a 5 | If the letters beneath 2 have the following possibilities:
-		| b c d | a=89 b=789 c=89 d=6789 e=6 f=X
-		---------- this means that in b the only real option is 7 as 89 are in a and c.
-		| X X X |
-		| e f X |
-		| X X X |
-		Also if for example we have the following options for a=b=c=d=6789 and e=X f=9
-		in b or d has to be the other 9 which can be used in horizontal quadrants.
-	5) A paramaeter to check if the game is stuck should be added , as if the game remains stuck for an iteration an assumption may be made
-*/
 #include <iostream>
 #include "tile.h"
 
@@ -35,37 +12,7 @@ Tile** createGrid() {
 
 	//Add game parameters
 	{
-		g[0][3].setActualValue('3');
-		g[0][4].setActualValue('8');
-		g[0][5].setActualValue('4');
-		g[0][7].setActualValue('5');
-		g[1][3].setActualValue('1');
-		g[1][4].setActualValue('2');
-		g[1][5].setActualValue('5');
-		g[1][6].setActualValue('8');
-		g[2][0].setActualValue('4');
-		g[2][1].setActualValue('8');
-		g[2][4].setActualValue('9');
-		g[2][6].setActualValue('1');
-		g[3][0].setActualValue('5');
-		g[3][7].setActualValue('9');
-		g[4][0].setActualValue('6');
-		g[4][1].setActualValue('3');
-		g[4][4].setActualValue('5');
-		g[4][5].setActualValue('1');
-		g[5][2].setActualValue('4');
-		g[5][5].setActualValue('9');
-		g[5][6].setActualValue('3');
-		g[5][7].setActualValue('7');
-		g[6][0].setActualValue('7');
-		g[6][3].setActualValue('5');
-		g[6][5].setActualValue('6');
-		g[6][7].setActualValue('2');
-		g[7][2].setActualValue('2');
-		g[7][5].setActualValue('3');
-		g[7][8].setActualValue('7');
-		g[8][3].setActualValue('2');
-		g[8][5].setActualValue('8');
+
 	}
 	return g;
 }
@@ -100,8 +47,7 @@ int main() {
 	printGrid(grid);
 
 	//Lets start removing numbers
-	for (int repeat = 0; repeat < 1000; repeat++)
-	{
+	for (int repeat = 0; repeat < 1000; repeat++) {
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
 				if (grid[i][j].getActualValue() == 'X') {
@@ -137,25 +83,29 @@ int main() {
 			}
 		}
 
-		//Analyze values in each quadrant + Advanced analysis, check if the only posible positions for a number
-		//are on the same column or row in a quadrant, if so remove that number from the rest of the row/column.
-		//50/50 analysis missing if two numbers just appear twice and on the same positions then the rest of numbers 
-		//from those position can be removed.****************************
 		int counter;
 		int foundk;
 		int foundl;
+		//Analyze values in each quadrant + Advanced analysis, check if the only posible positions for a number
+		//are on the same column or row in a quadrant, if so remove that number from the rest of the row/column.
+		//50/50 analysis missing if two numbers just appear twice and on the same positions then the rest of numbers 
+		//from those position can be removed.
+		std::vector<std::vector<std::vector<int>>> positions;
+		//Analyze whether there is a 50/50 within the same quadrant
 		for (int i = 0; i < 9; i += 3) {
 			for (int j = 0; j < 9; j += 3) {
 				//Count the number of tiles that each number has, if any of those is 1 then we have an answer.
+				positions = std::vector<std::vector<std::vector<int>>>(10);
 				for (char num = '1'; num <= '9'; num++) {
+					int numi = num - '0';
 					counter = 0;
 					foundk = -1;
 					foundl = -1;
 					for (int k = i; k < i+3; k++) {
 						for (int l = j; l < j+3; l++) {
-							bool y = grid[k][l].exists(num);
 							if (grid[k][l].getActualValue() =='X' && grid[k][l].exists(num)) {
 								counter++;
+								positions[numi].push_back({k,l});
 								if (foundk == -1) {
 									foundk = k;
 									foundl = l;
@@ -180,11 +130,12 @@ int main() {
 						if (counter == -1)
 							break;
 					}
+					if (counter != 2)
+						positions[numi].clear();
 					if(counter==1)
 						grid[foundk][foundl].setActualValue(num);
 					else {
 						if (counter == 2 || counter == 3) {
-							printGrid(grid);
 							if (foundk != -6) {//remove the value for the rest of the row
 								for (int t = 0; t < 9; t++)	{
 									if (t != j) {
@@ -210,11 +161,31 @@ int main() {
 						}
 					}
 				}
+				//Analyze 50 50
+				for (int it = 1; it <= 9; it++) {
+					if (positions[it].size() == 2) {
+						for (int jt = it+1; jt <= 9; jt++) {
+							if (positions[jt].size() == 2) {
+								if ((positions[it][0] == positions[jt][0] && positions[it][1] == positions[jt][1])
+									|| (positions[it][0] == positions[jt][1] && positions[it][1] == positions[jt][0])) {
+									//Found a 50 50 , remove the other numbers
+									for (char numm = '1'; numm <= '9'; numm++) {
+										int nummi = numm - '0';
+										if (nummi != it && nummi != jt) {
+											grid[positions[it][0][0]][positions[it][0][1]].removePosibleValue(numm);
+											grid[positions[jt][0][0]][positions[jt][0][1]].removePosibleValue(numm);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		//Analyze if it is the last possible value of the row
 		for (int k = 0; k < 9; k++) {
-			for (char num = 1; num <= 9; num++) {
+			for (char num = '1'; num <= '9'; num++) {
 				counter = 0;
 				for (int l = 0; l < 9; l++)	{
 					if (grid[k][l].getActualValue() == 'X' && grid[k][l].exists(num)) {
@@ -231,10 +202,9 @@ int main() {
 					grid[foundk][foundl].setActualValue(num);
 			}
 		}
-
 		//Analyze if it is the last possible value of the column
 		for (int k = 0; k < 9; k++) {
-			for (char num = 1; num <= 9; num++) {
+			for (char num = '1'; num <= '9'; num++) {
 				counter = 0;
 				for (int l = 0; l < 9; l++) {
 					if (grid[l][k].getActualValue() == 'X' && grid[l][k].exists(num)) {
@@ -251,9 +221,8 @@ int main() {
 					grid[foundl][foundk].setActualValue(num);
 			}
 		}
-
 		system("cls");
-		printGrid(grid);
+		printGrid(grid);	
 		if (checkComplete(grid)) {
 			std::cout << "Sudoku completed in " << repeat << " iterations" << std::endl;
 			break;
