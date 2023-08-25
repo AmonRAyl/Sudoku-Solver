@@ -11,7 +11,8 @@ Tile** createGrid() {
 		g[i] = new Tile[9];
 
 	//Add game parameters
-	{
+	/*
+	{//Solved, it requiered some assumptions to solve it
 		g[0][0].setActualValue('9',0);
 		g[0][4].setActualValue('4',0);
 		g[1][7].setActualValue('9',0);
@@ -39,6 +40,38 @@ Tile** createGrid() {
 		g[8][4].setActualValue('2',0);
 		g[8][8].setActualValue('5',0);
 	}
+	*/
+	{
+		//Another game it solved, it had +1 solutions
+		g[0][2].setActualValue('9',0);
+		g[0][4].setActualValue('1',0);
+		g[0][6].setActualValue('4',0);
+		g[1][3].setActualValue('7',0);
+		g[1][7].setActualValue('5',0);
+		g[1][8].setActualValue('3',0);
+		g[2][0].setActualValue('3',0);
+		g[2][1].setActualValue('7',0);
+		g[2][2].setActualValue('2',0);
+		g[3][4].setActualValue('5',0);
+		g[3][5].setActualValue('2',0);
+		g[3][7].setActualValue('9',0);
+		g[4][0].setActualValue('9',0);
+		g[4][3].setActualValue('4',0);
+		g[4][5].setActualValue('1',0);
+		g[4][8].setActualValue('2',0);
+		g[5][1].setActualValue('3',0);
+		g[5][3].setActualValue('8',0);
+		g[5][4].setActualValue('7',0);
+		g[6][6].setActualValue('9',0);
+		g[6][7].setActualValue('7',0);
+		g[6][8].setActualValue('6',0);
+		g[7][0].setActualValue('4',0);
+		g[7][1].setActualValue('9',0);
+		g[7][5].setActualValue('7',0);
+		g[8][2].setActualValue('7',0);
+		g[8][4].setActualValue('3',0);
+		g[8][6].setActualValue('1',0);
+	}
 	return g;
 }
 void printGrid(Tile** grid) {
@@ -64,7 +97,23 @@ bool checkComplete(Tile** grid) {
 	}
 	return true;
 }
-
+bool checkCorrect(Tile** grid,int x, int y, char num, int assumpLvl) {
+	//Check row, column
+	for (int i = 0; i < 9; i++){
+		if (grid[x][i].getActualValue() == num || grid[i][y].getActualValue() == num)
+			return false;
+	}
+	//Check quadrant
+	int ii = (x / 3) * 3;
+	int jj = (y / 3) * 3;
+	for (int q = ii; q < 3; q++) {
+		for (int qu = jj; qu < 3; qu++) {
+			if (grid[q][qu].getActualValue() == num)
+				return false;
+		}
+	}
+	return true;
+}
 int main() {
 
 	Tile** grid = createGrid();
@@ -84,16 +133,32 @@ int main() {
 					for (int c = 0; c < 9; c++) {
 						if (grid[c][j].getActualValue() != 'X') {
 							gameStuck+=grid[i][j].removePosibleValue(grid[c][j].getActualValue(),assumptionLevel);
-							if (grid[i][j].getSize() == 1)
-								grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+							if (grid[i][j].getSize() == 1) {
+								if(assumptionLevel==0)
+									grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+								else{
+									if (checkCorrect(grid, i, j, grid[i][j].getPosibleValues()[0], assumptionLevel))
+										grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+									else
+										gameStuck += grid[i][j].removePosibleValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+								}
+							}
 						}
 					}
 					//Check row
 					for (int r = 0; r < 9; r++) {
 						if (grid[i][r].getActualValue() != 'X') {
 							gameStuck += grid[i][j].removePosibleValue(grid[i][r].getActualValue(), assumptionLevel);
-							if (grid[i][j].getSize() == 1)
-								grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+							if (grid[i][j].getSize() == 1) {
+								if (assumptionLevel == 0)
+									grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+								else {
+									if (checkCorrect(grid, i, j, grid[i][j].getPosibleValues()[0], assumptionLevel))
+										grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+									else
+										gameStuck += grid[i][j].removePosibleValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+								}
+							}
 						}
 					}
 					//Check quadrant
@@ -103,8 +168,16 @@ int main() {
 						for (int qu = jj; qu < 3; qu++) {
 							if (grid[q][qu].getActualValue() != 'X') {
 								gameStuck += grid[i][j].removePosibleValue(grid[q][qu].getActualValue(), assumptionLevel);
-								if (grid[i][j].getSize() == 1)
-									grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+								if (grid[i][j].getSize() == 1) {
+									if (assumptionLevel == 0)
+										grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+									else {
+										if (checkCorrect(grid, i, j, grid[i][j].getPosibleValues()[0], assumptionLevel))
+											grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+										else
+											gameStuck += grid[i][j].removePosibleValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
+									}
+								}
 							}
 						}
 					}
@@ -163,7 +236,14 @@ int main() {
 						positions[numi].clear();
 					if (counter == 1) {
 						gameStuck++;
-						grid[foundk][foundl].setActualValue(num, assumptionLevel);
+						if(assumptionLevel==0)
+							grid[foundk][foundl].setActualValue(num, assumptionLevel);
+						else {
+							if(checkCorrect(grid,foundk,foundl,num,assumptionLevel))
+								grid[foundk][foundl].setActualValue(num, assumptionLevel);
+							else
+								gameStuck += grid[foundk][foundl].removePosibleValue(num, assumptionLevel);
+						}
 					}
 					else {
 						if (counter == 2 || counter == 3) {
@@ -171,8 +251,16 @@ int main() {
 								for (int t = 0; t < 9; t++)	{
 									if (t != j) {
 										gameStuck += grid[foundk][t].removePosibleValue(num, assumptionLevel);
-										if (grid[foundk][t].getSize() == 1)
-											grid[foundk][t].setActualValue(grid[foundk][t].getPosibleValues()[0], assumptionLevel);
+										if (grid[foundk][t].getSize() == 1) {
+											if (assumptionLevel == 0)
+												grid[foundk][t].setActualValue(grid[foundk][t].getPosibleValues()[0], assumptionLevel);
+											else {
+												if (checkCorrect(grid, foundk, t, grid[foundk][t].getPosibleValues()[0], assumptionLevel))
+													grid[foundk][t].setActualValue(grid[foundk][t].getPosibleValues()[0], assumptionLevel);
+												else
+													gameStuck += grid[foundk][t].removePosibleValue(grid[foundk][t].getPosibleValues()[0], assumptionLevel);
+											}
+										}
 									}
 									else
 										t += 2;
@@ -182,8 +270,16 @@ int main() {
 								for (int t = 0; t < 9; t++) {
 									if (t != i) {
 										gameStuck += grid[t][foundl].removePosibleValue(num, assumptionLevel);
-										if (grid[t][foundl].getSize() == 1)
-											grid[t][foundl].setActualValue(grid[t][foundl].getPosibleValues()[0], assumptionLevel);
+										if (grid[t][foundl].getSize() == 1) {
+											if (assumptionLevel == 0)
+												grid[t][foundl].setActualValue(grid[t][foundl].getPosibleValues()[0], assumptionLevel);
+											else {
+												if (checkCorrect(grid, t, foundl, grid[t][foundl].getPosibleValues()[0], assumptionLevel))
+													grid[t][foundl].setActualValue(grid[t][foundl].getPosibleValues()[0], assumptionLevel);
+												else
+													gameStuck += grid[t][foundl].removePosibleValue(grid[t][foundl].getPosibleValues()[0], assumptionLevel);
+											}
+										}
 									}
 									else
 										t += 2;
@@ -231,7 +327,14 @@ int main() {
 				}
 				if (counter == 1) {
 					gameStuck++;
-					grid[foundk][foundl].setActualValue(num, assumptionLevel);
+					if (assumptionLevel == 0)
+						grid[foundk][foundl].setActualValue(num, assumptionLevel);
+					else {
+						if (checkCorrect(grid, foundk, foundl, num, assumptionLevel))
+							grid[foundk][foundl].setActualValue(num, assumptionLevel);
+						else
+							gameStuck += grid[foundk][foundl].removePosibleValue(num, assumptionLevel);
+					}
 				}
 			}
 		}
@@ -252,11 +355,18 @@ int main() {
 				}
 				if (counter == 1) {
 					gameStuck++;
-					grid[foundl][foundk].setActualValue(num, assumptionLevel);
+					if (assumptionLevel == 0)
+						grid[foundl][foundk].setActualValue(num, assumptionLevel);
+					else {
+						if (checkCorrect(grid, foundl, foundk, num, assumptionLevel))
+							grid[foundl][foundk].setActualValue(num, assumptionLevel);
+						else
+							gameStuck += grid[foundl][foundk].removePosibleValue(num, assumptionLevel);
+					}
 				}
 			}
 		}
-		int lowestSize = 4;
+		int lowestSize = 5;
 		int saveK, saveL;
 		bool errorAssumption = true;
 		int found = 0;
@@ -271,7 +381,6 @@ int main() {
 				for (int l = 0; l < 9; l++) {
 					for (int i = 0; i < assumptionIterator.size(); i++) {
 						if (assumptionIterator[i][0] == k && assumptionIterator[i][1] == l) {
-							assumptionIterator[i][2]++;
 							found = i;
 							break;
 						}
@@ -284,9 +393,9 @@ int main() {
 					}
 				}
 			}
+			found = -1;
 			if (errorAssumption){
 				remove = true;
-				assumptionLevel--;
 			}
 			else {
 					//This is an iterator where i save the actual possition being assumed and in case it ends
@@ -298,14 +407,19 @@ int main() {
 							break;
 						}
 					}
-					if (found == 0) {
+					if (found == -1) {
 						assumptionIterator.push_back({ saveK, saveL, 0 });
 						found = assumptionIterator.size() - 1;
 					}
 					if (assumptionIterator[found][2] >= grid[saveK][saveL].getSize())
 						remove = true;
-					else
-						grid[saveK][saveL].setActualValue(grid[saveK][saveL].getPosibleValues()[assumptionIterator[found][2]], assumptionLevel);
+					else {
+						if(checkCorrect(grid,saveK,saveL, grid[saveK][saveL].getPosibleValues()[assumptionIterator[found][2]],assumptionLevel))
+							grid[saveK][saveL].setActualValue(grid[saveK][saveL].getPosibleValues()[assumptionIterator[found][2]], assumptionLevel);
+						else {
+							gameStuck += grid[saveK][saveL].removePosibleValue(grid[saveK][saveL].getPosibleValues()[assumptionIterator[found][2]], assumptionLevel);
+						}
+					}
 				}
 			}
 		gameStuck = 0;
@@ -314,29 +428,21 @@ int main() {
 		for (int k = 0; k < 9; k++) {
 			for (int l = 0; l < 9; l++) {
 				if (assumptionLevel!=0 && (remove || (grid[k][l].getSize() == 0 && grid[k][l].getActualValue()=='X'))) {
+					if (remove)
+						assumptionLevel--;
 					for (int k = 0; k < 9; k++)	{
 						for (int l = 0; l < 9; l++)	{
-							std::cout << grid[k][l].getAssumptionLevel();
 							if (grid[k][l].getAssumptionLevel()==assumptionLevel) {
 								grid[k][l].removeAssumption();
 							}
 						}
-						std::cout << std::endl;
 					}
-					goto removeassumption;//Now the next assumption should be made
+					assumptionLevel--;
+					goto end;//Now the next assumption should be made
 				}
 			}
 		}
-		
-		if (false) {
-		removeassumption:
-			if(!errorAssumption)
-				assumptionLevel--;
-			lowestSize = 9;
-			found = 0;
-			errorAssumption = true;
-			goto restartassumption;
-		}
+		end:
 		system("cls");
 		printGrid(grid);	
 		if (checkComplete(grid)) {
