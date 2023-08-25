@@ -12,7 +12,32 @@ Tile** createGrid() {
 
 	//Add game parameters
 	{
-
+		g[0][0].setActualValue('9',0);
+		g[0][4].setActualValue('4',0);
+		g[1][7].setActualValue('9',0);
+		g[2][1].setActualValue('3',0);
+		g[2][3].setActualValue('5',0);
+		g[2][5].setActualValue('8',0);
+		g[2][6].setActualValue('6',0);
+		g[2][8].setActualValue('7',0);
+		g[3][0].setActualValue('7',0);
+		g[3][3].setActualValue('4',0);
+		g[3][5].setActualValue('3',0);
+		g[3][8].setActualValue('8',0);
+		g[4][0].setActualValue('5',0);
+		g[4][8].setActualValue('6',0);
+		g[5][1].setActualValue('8',0);
+		g[5][3].setActualValue('7',0);
+		g[5][5].setActualValue('6',0);
+		g[5][7].setActualValue('3',0);
+		g[6][2].setActualValue('1',0);
+		g[6][3].setActualValue('3',0);
+		g[6][5].setActualValue('9',0);
+		g[7][1].setActualValue('6',0);
+		g[7][6].setActualValue('1',0);
+		g[8][2].setActualValue('7',0);
+		g[8][4].setActualValue('2',0);
+		g[8][8].setActualValue('5',0);
 	}
 	return g;
 }
@@ -46,6 +71,10 @@ int main() {
 
 	printGrid(grid);
 
+	int gameStuck = 0;
+	int assumptionLevel = 0;
+	//std::vector<int[3]> assumptionIterator;//It will save k,l, iteration
+	std::vector<std::vector<int>> assumptionIterator;
 	//Lets start removing numbers
 	for (int repeat = 0; repeat < 1000; repeat++) {
 		for (int i = 0; i < 9; i++) {
@@ -54,17 +83,17 @@ int main() {
 					//Check column
 					for (int c = 0; c < 9; c++) {
 						if (grid[c][j].getActualValue() != 'X') {
-							grid[i][j].removePosibleValue(grid[c][j].getActualValue());
+							gameStuck+=grid[i][j].removePosibleValue(grid[c][j].getActualValue(),assumptionLevel);
 							if (grid[i][j].getSize() == 1)
-								grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0]);
+								grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
 						}
 					}
 					//Check row
 					for (int r = 0; r < 9; r++) {
 						if (grid[i][r].getActualValue() != 'X') {
-							grid[i][j].removePosibleValue(grid[i][r].getActualValue());
+							gameStuck += grid[i][j].removePosibleValue(grid[i][r].getActualValue(), assumptionLevel);
 							if (grid[i][j].getSize() == 1)
-								grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0]);
+								grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
 						}
 					}
 					//Check quadrant
@@ -73,9 +102,9 @@ int main() {
 					for (int q = ii; q < 3; q++) {
 						for (int qu = jj; qu < 3; qu++) {
 							if (grid[q][qu].getActualValue() != 'X') {
-								grid[i][j].removePosibleValue(grid[q][qu].getActualValue());
+								gameStuck += grid[i][j].removePosibleValue(grid[q][qu].getActualValue(), assumptionLevel);
 								if (grid[i][j].getSize() == 1)
-									grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0]);
+									grid[i][j].setActualValue(grid[i][j].getPosibleValues()[0], assumptionLevel);
 							}
 						}
 					}
@@ -88,7 +117,7 @@ int main() {
 		int foundl;
 		//Analyze values in each quadrant + Advanced analysis, check if the only posible positions for a number
 		//are on the same column or row in a quadrant, if so remove that number from the rest of the row/column.
-		//50/50 analysis missing if two numbers just appear twice and on the same positions then the rest of numbers 
+		//50/50 analysis, if two numbers just appear twice and on the same positions then the rest of numbers 
 		//from those position can be removed.
 		std::vector<std::vector<std::vector<int>>> positions;
 		//Analyze whether there is a 50/50 within the same quadrant
@@ -103,7 +132,7 @@ int main() {
 					foundl = -1;
 					for (int k = i; k < i+3; k++) {
 						for (int l = j; l < j+3; l++) {
-							if (grid[k][l].getActualValue() =='X' && grid[k][l].exists(num)) {
+							if (grid[k][l].getActualValue() =='X' && grid[k][l].exists(num, assumptionLevel)) {
 								counter++;
 								positions[numi].push_back({k,l});
 								if (foundk == -1) {
@@ -132,16 +161,18 @@ int main() {
 					}
 					if (counter != 2)
 						positions[numi].clear();
-					if(counter==1)
-						grid[foundk][foundl].setActualValue(num);
+					if (counter == 1) {
+						gameStuck++;
+						grid[foundk][foundl].setActualValue(num, assumptionLevel);
+					}
 					else {
 						if (counter == 2 || counter == 3) {
 							if (foundk != -6) {//remove the value for the rest of the row
 								for (int t = 0; t < 9; t++)	{
 									if (t != j) {
-										grid[foundk][t].removePosibleValue(num);
+										gameStuck += grid[foundk][t].removePosibleValue(num, assumptionLevel);
 										if (grid[foundk][t].getSize() == 1)
-											grid[foundk][t].setActualValue(grid[foundk][t].getPosibleValues()[0]);
+											grid[foundk][t].setActualValue(grid[foundk][t].getPosibleValues()[0], assumptionLevel);
 									}
 									else
 										t += 2;
@@ -150,9 +181,9 @@ int main() {
 							else {//remove the value for the rest of the column
 								for (int t = 0; t < 9; t++) {
 									if (t != i) {
-										grid[t][foundl].removePosibleValue(num);
+										gameStuck += grid[t][foundl].removePosibleValue(num, assumptionLevel);
 										if (grid[t][foundl].getSize() == 1)
-											grid[t][foundl].setActualValue(grid[t][foundl].getPosibleValues()[0]);
+											grid[t][foundl].setActualValue(grid[t][foundl].getPosibleValues()[0], assumptionLevel);
 									}
 									else
 										t += 2;
@@ -172,8 +203,8 @@ int main() {
 									for (char numm = '1'; numm <= '9'; numm++) {
 										int nummi = numm - '0';
 										if (nummi != it && nummi != jt) {
-											grid[positions[it][0][0]][positions[it][0][1]].removePosibleValue(numm);
-											grid[positions[jt][0][0]][positions[jt][0][1]].removePosibleValue(numm);
+											gameStuck += grid[positions[it][0][0]][positions[it][0][1]].removePosibleValue(numm, assumptionLevel);
+											gameStuck += grid[positions[jt][0][0]][positions[jt][0][1]].removePosibleValue(numm, assumptionLevel);
 										}
 									}
 								}
@@ -188,7 +219,7 @@ int main() {
 			for (char num = '1'; num <= '9'; num++) {
 				counter = 0;
 				for (int l = 0; l < 9; l++)	{
-					if (grid[k][l].getActualValue() == 'X' && grid[k][l].exists(num)) {
+					if (grid[k][l].getActualValue() == 'X' && grid[k][l].exists(num, assumptionLevel)) {
 						counter++;
 						foundk = k;
 						foundl = l;
@@ -198,8 +229,10 @@ int main() {
 						break;
 					}
 				}
-				if (counter==1)	
-					grid[foundk][foundl].setActualValue(num);
+				if (counter == 1) {
+					gameStuck++;
+					grid[foundk][foundl].setActualValue(num, assumptionLevel);
+				}
 			}
 		}
 		//Analyze if it is the last possible value of the column
@@ -207,7 +240,7 @@ int main() {
 			for (char num = '1'; num <= '9'; num++) {
 				counter = 0;
 				for (int l = 0; l < 9; l++) {
-					if (grid[l][k].getActualValue() == 'X' && grid[l][k].exists(num)) {
+					if (grid[l][k].getActualValue() == 'X' && grid[l][k].exists(num, assumptionLevel)) {
 						counter++;
 						foundk = k;
 						foundl = l;
@@ -217,9 +250,92 @@ int main() {
 						break;
 					}
 				}
-				if (counter == 1)
-					grid[foundl][foundk].setActualValue(num);
+				if (counter == 1) {
+					gameStuck++;
+					grid[foundl][foundk].setActualValue(num, assumptionLevel);
+				}
 			}
+		}
+		int lowestSize = 4;
+		int saveK, saveL;
+		bool errorAssumption = true;
+		int found = 0;
+		bool remove = false;
+		//Make a guess/assumption in case a stuck position is reached
+		
+		if (gameStuck == 0) {
+			assumptionLevel++;
+			restartassumption:
+			// Look for the position with the lowest number of posibilities and choose one
+			for (int k = 0; k < 9; k++) {
+				for (int l = 0; l < 9; l++) {
+					for (int i = 0; i < assumptionIterator.size(); i++) {
+						if (assumptionIterator[i][0] == k && assumptionIterator[i][1] == l) {
+							assumptionIterator[i][2]++;
+							found = i;
+							break;
+						}
+					}
+					if (grid[k][l].getSize() < lowestSize && grid[k][l].getActualValue()=='X'&&(found == 0 || (found != 0 && assumptionIterator[found][2]<grid[k][l].getSize()))) {//I have to implement a way to not re
+						saveK = k; //peat assumptions
+						saveL = l;
+						lowestSize = grid[k][l].getSize();
+						errorAssumption = false;
+					}
+				}
+			}
+			if (errorAssumption){
+				remove = true;
+				assumptionLevel--;
+			}
+			else {
+					//This is an iterator where i save the actual possition being assumed and in case it ends
+					//in an unwinable position we can select the next number in the list
+					for (int i = 0; i < assumptionIterator.size(); i++) {
+						if (assumptionIterator[i][0] == saveK && assumptionIterator[i][1] == saveL) {
+							assumptionIterator[i][2]++;
+							found = i;
+							break;
+						}
+					}
+					if (found == 0) {
+						assumptionIterator.push_back({ saveK, saveL, 0 });
+						found = assumptionIterator.size() - 1;
+					}
+					if (assumptionIterator[found][2] >= grid[saveK][saveL].getSize())
+						remove = true;
+					else
+						grid[saveK][saveL].setActualValue(grid[saveK][saveL].getPosibleValues()[assumptionIterator[found][2]], assumptionLevel);
+				}
+			}
+		gameStuck = 0;
+		//look if imposible position is reached, if a certain tile has no numbers available
+		// then remove the last assumption from all the board
+		for (int k = 0; k < 9; k++) {
+			for (int l = 0; l < 9; l++) {
+				if (assumptionLevel!=0 && (remove || (grid[k][l].getSize() == 0 && grid[k][l].getActualValue()=='X'))) {
+					for (int k = 0; k < 9; k++)	{
+						for (int l = 0; l < 9; l++)	{
+							std::cout << grid[k][l].getAssumptionLevel();
+							if (grid[k][l].getAssumptionLevel()==assumptionLevel) {
+								grid[k][l].removeAssumption();
+							}
+						}
+						std::cout << std::endl;
+					}
+					goto removeassumption;//Now the next assumption should be made
+				}
+			}
+		}
+		
+		if (false) {
+		removeassumption:
+			if(!errorAssumption)
+				assumptionLevel--;
+			lowestSize = 9;
+			found = 0;
+			errorAssumption = true;
+			goto restartassumption;
 		}
 		system("cls");
 		printGrid(grid);	
