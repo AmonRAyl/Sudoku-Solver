@@ -71,11 +71,11 @@ int Tile::removePosibleValue(char val, int assumpLvl) {
 		}
 		return 0;
 	}
-	if (assumptionLevel != assumpLvl)
-		assumptionLevel = assumpLvl;
 	auto pos = std::find(posibleValuesAssumption.begin(), posibleValuesAssumption.end(), val);
 	if (pos != posibleValuesAssumption.end()) {
 		posibleValuesAssumption.erase(pos);
+		if (assumptionLevel != assumpLvl)
+			assumptionLevel = assumpLvl;
 		return 1;
 	}
 	return 0;
