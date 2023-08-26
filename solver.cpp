@@ -11,66 +11,31 @@ Tile** createGrid() {
 		g[i] = new Tile[9];
 
 	//Add game parameters
-	/*
-	{//Solved, it requiered some assumptions to solve it
-		g[0][0].setActualValue('9',0);
-		g[0][4].setActualValue('4',0);
-		g[1][7].setActualValue('9',0);
-		g[2][1].setActualValue('3',0);
-		g[2][3].setActualValue('5',0);
-		g[2][5].setActualValue('8',0);
-		g[2][6].setActualValue('6',0);
-		g[2][8].setActualValue('7',0);
-		g[3][0].setActualValue('7',0);
-		g[3][3].setActualValue('4',0);
-		g[3][5].setActualValue('3',0);
-		g[3][8].setActualValue('8',0);
-		g[4][0].setActualValue('5',0);
-		g[4][8].setActualValue('6',0);
-		g[5][1].setActualValue('8',0);
-		g[5][3].setActualValue('7',0);
-		g[5][5].setActualValue('6',0);
-		g[5][7].setActualValue('3',0);
-		g[6][2].setActualValue('1',0);
-		g[6][3].setActualValue('3',0);
-		g[6][5].setActualValue('9',0);
-		g[7][1].setActualValue('6',0);
-		g[7][6].setActualValue('1',0);
-		g[8][2].setActualValue('7',0);
-		g[8][4].setActualValue('2',0);
-		g[8][8].setActualValue('5',0);
-	}
-	*/
-	{
-		//Another game it solved, it had +1 solutions
-		g[0][2].setActualValue('9',0);
-		g[0][4].setActualValue('1',0);
-		g[0][6].setActualValue('4',0);
-		g[1][3].setActualValue('7',0);
-		g[1][7].setActualValue('5',0);
-		g[1][8].setActualValue('3',0);
-		g[2][0].setActualValue('3',0);
-		g[2][1].setActualValue('7',0);
-		g[2][2].setActualValue('2',0);
-		g[3][4].setActualValue('5',0);
-		g[3][5].setActualValue('2',0);
-		g[3][7].setActualValue('9',0);
-		g[4][0].setActualValue('9',0);
-		g[4][3].setActualValue('4',0);
-		g[4][5].setActualValue('1',0);
-		g[4][8].setActualValue('2',0);
-		g[5][1].setActualValue('3',0);
-		g[5][3].setActualValue('8',0);
-		g[5][4].setActualValue('7',0);
-		g[6][6].setActualValue('9',0);
-		g[6][7].setActualValue('7',0);
-		g[6][8].setActualValue('6',0);
-		g[7][0].setActualValue('4',0);
-		g[7][1].setActualValue('9',0);
-		g[7][5].setActualValue('7',0);
-		g[8][2].setActualValue('7',0);
-		g[8][4].setActualValue('3',0);
-		g[8][6].setActualValue('1',0);
+	{ //Extreme difficulty #1536 from https://www.sudoku-online.org/extremo.php, 107 iterations to beat
+		g[0][3].setActualValue('4', 0);
+		g[0][4].setActualValue('8', 0);
+		g[0][5].setActualValue('7', 0);
+		g[1][1].setActualValue('5', 0);
+		g[1][3].setActualValue('9', 0);
+		g[2][2].setActualValue('7', 0);
+		g[2][6].setActualValue('2', 0);
+		g[3][0].setActualValue('2', 0);
+		g[3][2].setActualValue('1', 0);
+		g[3][5].setActualValue('4', 0);
+		g[3][7].setActualValue('9', 0);
+		g[4][2].setActualValue('4', 0);
+		g[4][6].setActualValue('6', 0);
+		g[4][8].setActualValue('3', 0);
+		g[5][1].setActualValue('9', 0);
+		g[5][5].setActualValue('5', 0);
+		g[6][0].setActualValue('3', 0);
+		g[6][7].setActualValue('2', 0);
+		g[7][2].setActualValue('8', 0);
+		g[7][3].setActualValue('7', 0);
+		g[7][7].setActualValue('3', 0);
+		g[8][1].setActualValue('6', 0);
+		g[8][4].setActualValue('1', 0);
+		g[8][6].setActualValue('8', 0);
 	}
 	return g;
 }
@@ -369,7 +334,7 @@ int main() {
 		int lowestSize = 5;
 		int saveK, saveL;
 		bool errorAssumption = true;
-		int found = 0;
+		int found = -1;
 		bool remove = false;
 		//Make a guess/assumption in case a stuck position is reached
 		
@@ -385,12 +350,13 @@ int main() {
 							break;
 						}
 					}
-					if (grid[k][l].getSize() < lowestSize && grid[k][l].getActualValue()=='X'&&(found == 0 || (found != 0 && assumptionIterator[found][2]<grid[k][l].getSize()))) {//I have to implement a way to not re
+					if (grid[k][l].getSize() < lowestSize && grid[k][l].getActualValue()=='X'&&(found == -1 || (found != -1 && assumptionIterator[found][2]<grid[k][l].getSize()))) {//I have to implement a way to not re
 						saveK = k; //peat assumptions
 						saveL = l;
 						lowestSize = grid[k][l].getSize();
 						errorAssumption = false;
 					}
+					found = -1;
 				}
 			}
 			found = -1;
