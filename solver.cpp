@@ -11,6 +11,7 @@ Tile** createGrid() {
 		g[i] = new Tile[9];
 
 	//Add game parameters
+	/*
 	{ //Extreme difficulty #1536 from https://www.sudoku-online.org/extremo.php, 107 iterations to beat
 		g[0][3].setActualValue('4', 0);
 		g[0][4].setActualValue('8', 0);
@@ -36,6 +37,31 @@ Tile** createGrid() {
 		g[8][1].setActualValue('6', 0);
 		g[8][4].setActualValue('1', 0);
 		g[8][6].setActualValue('8', 0);
+	}
+	*/
+	{
+		//Arto Inkala hardest sudoku with one soltuion, it solved it in 509 iterations
+		g[0][0].setActualValue('8',0);
+		g[1][2].setActualValue('3',0);
+		g[1][3].setActualValue('6',0);
+		g[2][1].setActualValue('7',0);
+		g[2][4].setActualValue('9',0);
+		g[2][6].setActualValue('2',0);
+		g[3][1].setActualValue('5',0);
+		g[3][5].setActualValue('7',0);
+		g[4][4].setActualValue('4',0);
+		g[4][5].setActualValue('5',0);
+		g[4][6].setActualValue('7',0);
+		g[5][3].setActualValue('1',0);
+		g[5][7].setActualValue('3',0);
+		g[6][2].setActualValue('1',0);
+		g[6][7].setActualValue('6',0);
+		g[6][8].setActualValue('8',0);
+		g[7][2].setActualValue('8',0);
+		g[7][3].setActualValue('5',0);
+		g[7][7].setActualValue('1',0);
+		g[8][1].setActualValue('9',0);
+		g[8][6].setActualValue('4',0);
 	}
 	return g;
 }
